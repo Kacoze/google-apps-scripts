@@ -1,0 +1,78 @@
+name: Deploy GAS
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Deployment target"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - absence
+          - slack
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Configure clasp auth
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ]; then
+            echo "Missing secret: CLASPRC_JSON"
+            exit 1
+          fi
+          printf '%s' "$CLASPRC_JSON" > "$HOME/.clasprc.json"
+
+      - name: Configure script IDs
+        env:
+          GAS_ABSENCE_SCRIPT_ID: ${{ secrets.GAS_ABSENCE_SCRIPT_ID }}
+          GAS_SLACK_SCRIPT_ID: ${{ secrets.GAS_SLACK_SCRIPT_ID }}
+        run: |
+          if [ "${{ github.event.inputs.target }}" = "all" ] || [ "${{ github.event.inputs.target }}" = "absence" ]; then
+            if [ -z "$GAS_ABSENCE_SCRIPT_ID" ]; then
+              echo "Missing secret: GAS_ABSENCE_SCRIPT_ID"
+              exit 1
+            fi
+            cat > google-calendar-absence-sync/.clasp.json <<EOF
+          {
+            "scriptId": "$GAS_ABSENCE_SCRIPT_ID",
+            "rootDir": "."
+          }
+          EOF
+          fi
+
+          if [ "${{ github.event.inputs.target }}" = "all" ] || [ "${{ github.event.inputs.target }}" = "slack" ]; then
+            if [ -z "$GAS_SLACK_SCRIPT_ID" ]; then
+              echo "Missing secret: GAS_SLACK_SCRIPT_ID"
+              exit 1
+            fi
+            cat > slack-calendar-status-sync/.clasp.json <<EOF
+          {
+            "scriptId": "$GAS_SLACK_SCRIPT_ID",
+            "rootDir": "."
+          }
+          EOF
+          fi
+
+      - name: Deploy absence script
+        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == 'absence' }}
+        run: npm run deploy:absence
+
+      - name: Deploy slack script
+        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == 'slack' }}
+        run: npm run deploy:slack

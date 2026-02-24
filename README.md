@@ -22,16 +22,16 @@ Google Apps Script, Google Calendar automation, Slack status automation, out of 
 - Purpose: sync absence events from a source calendar to a target calendar as Out of Office.
 - Best for: HR/team availability visibility and automatic OOO calendar hygiene.
 - Full user guide:
-  [README.md](/home/kamil/praca/prywatne/google-apps-scripts/google-calendar-absence-sync/README.md)
+  [google-calendar-absence-sync/README.md](google-calendar-absence-sync/README.md)
 
 2. `slack-calendar-status-sync`
 
 - Purpose: update Slack status, presence, and DND from calendar events.
 - Best for: automatic Slack status management during meetings, focus time, holidays, and OOO.
 - Full user guide:
-  [README.md](/home/kamil/praca/prywatne/google-apps-scripts/slack-calendar-status-sync/README.md)
+  [slack-calendar-status-sync/README.md](slack-calendar-status-sync/README.md)
 - Quickstart:
-  [QUICKSTART.md](/home/kamil/praca/prywatne/google-apps-scripts/slack-calendar-status-sync/QUICKSTART.md)
+  [slack-calendar-status-sync/QUICKSTART.md](slack-calendar-status-sync/QUICKSTART.md)
 
 ## General Setup (Applies to Both)
 
@@ -48,6 +48,13 @@ For exact required keys, function names, and run modes, use script-specific READ
 - Do not store production secrets in source code.
 - Use `PropertiesService` for IDs/tokens.
 - Do not commit `.env`, `.clasp.json`, `.clasprc.json`, or credential files.
+
+## CI Deployment
+
+If you want automatic deployment from GitHub Actions to Google Apps Script:
+
+- Setup guide:
+  [docs/CI_DEPLOY.md](docs/CI_DEPLOY.md)
 
 ## Use Cases
 
