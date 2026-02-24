@@ -1,0 +1,4 @@
+{
+  "scriptId": "YOUR_SLACK_SCRIPT_ID",
+  "rootDir": "."
+}

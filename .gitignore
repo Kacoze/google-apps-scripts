@@ -1,0 +1,24 @@
+.DS_Store
+Thumbs.db
+
+# IDE/editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Google Apps Script / local config (if used)
+.clasp.json
+.clasprc.json
+
+# Local env/secrets
+.env
+.env.*
+*.local
+
+# Test artifacts
+coverage/
+**/coverage/
+
+# Dependencies
+node_modules/

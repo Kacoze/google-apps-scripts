@@ -1,0 +1,10 @@
+{
+  "name": "google-calendar-absence-sync",
+  "private": true,
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test test/**/*.test.cjs",
+    "test:coverage": "c8 --include \"core/**/*.cjs\" --check-coverage --lines 80 --functions 80 --branches 70 node --test test/**/*.test.cjs"
+  }
+}

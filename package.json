@@ -1,0 +1,32 @@
+{
+  "name": "google-apps-scripts",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "google-calendar-absence-sync",
+    "slack-calendar-status-sync"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "test:absence": "npm run test --workspace google-calendar-absence-sync",
+    "test:slack": "npm run test --workspace slack-calendar-status-sync",
+    "lint": "eslint \"test-utils/**/*.cjs\" \"*/test/**/*.cjs\"",
+    "format": "prettier --write \"**/*.{md,json,cjs,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{md,json,cjs,yml,yaml}\"",
+    "scan:secrets": "! rg -n --hidden -S -g '!node_modules/**' -g '!.git/**' -g '!**/test/**' -g '!**/*.md' \"(xox[pbar]-[0-9A-Za-z-]{20,}|AIza[0-9A-Za-z_-]{20,}|AKIA[0-9A-Z]{16}|ghp_[0-9A-Za-z]{36}|github_pat_[0-9A-Za-z_]{20,}|-----BEGIN (RSA|EC|OPENSSH|PRIVATE) KEY-----)\" .",
+    "release:check": "npm run lint && npm run format:check && npm run test:coverage && npm run scan:secrets && node scripts/check-release-readiness.cjs",
+    "clasp:login": "npx clasp login --no-localhost",
+    "deploy:absence": "cd google-calendar-absence-sync && npx clasp push -f",
+    "deploy:slack": "cd slack-calendar-status-sync && npx clasp push -f",
+    "pull:absence": "cd google-calendar-absence-sync && npx clasp pull",
+    "pull:slack": "cd slack-calendar-status-sync && npx clasp pull"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "c8": "^10.1.3",
+    "eslint": "^9.21.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.2"
+  }
+}
