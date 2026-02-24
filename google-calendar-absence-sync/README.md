@@ -2,18 +2,22 @@
 
 Automatically syncs absence events (vacation/sick leave/etc.) for one person from a team calendar to a personal calendar as Out of Office events.
 
-## Architecture
+## What You Need
 
-- App layer: `syncAbsences`, `syncAbsencesManual`, `planAbsences`
-- Core layer: pure logic in `core/absenceCore.cjs`
-- Ports layer: Google Apps Script integrations (`CalendarApp`, `Calendar.Events`, `LockService`)
+- A source calendar with team absences.
+- A target calendar where Out of Office events should be created.
+- Permission to read source events and write to target calendar.
+- Optional: Advanced Calendar Service (`Calendar API v3`) for native `outOfOffice` event type.
 
-## Setup
+## Setup in Google Apps Script
 
-1. Open [Google Apps Script](https://script.google.com).
-2. Create or open a project.
-3. Copy `google_calendar_absence_sync.gs` into the editor.
-4. (Optional) add `appsscript.json` from this folder for reproducible settings.
+1. Open `https://script.google.com`.
+2. Create a project and paste `google_calendar_absence_sync.gs`.
+3. Open `Project Settings` and enable:
+   - `Show "appsscript.json" manifest file in editor` (optional)
+4. Enable Advanced Calendar Service (optional but recommended):
+   - Editor: `Services` -> add `Calendar API`
+   - Google Cloud Console: enable `Calendar API`
 
 Configure `CONFIG`:
 
@@ -23,7 +27,7 @@ TARGET_CALENDAR_ID: "your-personal-calendar-id@group.calendar.google.com",
 PERSON_NAME: "your-full-name"
 ```
 
-Or store them in `PropertiesService` (recommended for public repos):
+Recommended: store values in `PropertiesService`:
 
 ```javascript
 const props = PropertiesService.getScriptProperties();
@@ -39,42 +43,28 @@ props.setProperty("ERROR_ALERT_WEBHOOK_URL", "https://example.test/hook");
 props.setProperty("ERROR_ALERT_EMAIL", "ops@example.test");
 ```
 
-Enable Advanced Calendar Service (Calendar API v3) if you want native `outOfOffice` events.
-
-## Validation
-
-`validateAbsenceConfig_` runs at startup and fails fast when placeholders or invalid values are detected. Values are resolved from `PropertiesService` first, then `CONFIG`.
-
-## Runtime Modes
+## Run Modes
 
 - `syncAbsences()` - normal run (with lock and writes)
 - `syncAbsencesManual()` - manual trigger path
 - `planAbsences()` - plan-only mode, no writes
 - `DRY_RUN: true` - logs intended actions, no writes
 
-## Unit Tests
+## Recommended Trigger
 
-From repository root:
-
-```bash
-npm run test:absence
-```
-
-## Deployment with clasp
-
-1. Copy `.clasp.json.example` to `.clasp.json`.
-2. Fill `scriptId`.
-3. Run from repository root:
-
-```bash
-npm run deploy:absence
-```
+- Create a time-driven trigger for `syncAbsences()`:
+  - every 15 minutes, every 30 minutes, or hourly (based on your team needs)
 
 ## Troubleshooting
 
-- "Source/target calendar not found": verify calendar IDs and sharing permissions.
-- No Out of Office type: enable Advanced Calendar Service.
-- Duplicates: verify timezone consistency and date matching tolerance.
+- `Source/target calendar not found`:
+  verify calendar IDs and sharing permissions.
+- Events are created without native OOO type:
+  enable Advanced Calendar Service and Cloud Calendar API.
+- Duplicate-looking entries:
+  verify timezone consistency and source title conventions.
+- Script fails at startup:
+  check required properties (`SOURCE_CALENDAR_ID`, `TARGET_CALENDAR_ID`, `PERSON_NAME`).
 
 ## Integration
 

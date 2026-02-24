@@ -2,13 +2,7 @@
 
 Automatically updates Slack status, presence, and DND based on Google Calendar.
 
-## Architecture
-
-- App layer: `syncSlackFromCalendars`, `planSlackFromCalendars`, `executeSlackPlan_`
-- Core layer: pure logic in `core/slackCore.cjs`
-- Ports layer: GAS and Slack API integrations (`CalendarApp`, `UrlFetchApp`, `PropertiesService`)
-
-## Priority Order
+## How It Decides Status (Priority Order)
 
 1. Manual override (emoji outside `SAFE_EMOJIS`)
 2. Holiday calendar all-day events
@@ -18,12 +12,17 @@ Automatically updates Slack status, presence, and DND based on Google Calendar.
 6. Fallback calendar events (`FALLBACK_CAL_ID`, optional)
 7. Work schedule fallback
 
-## Setup
+## What You Need
 
-1. Open [Google Apps Script](https://script.google.com).
+- Slack app with user token and required scopes.
+- Calendar IDs for holiday/status/meeting (and optional fallback).
+- Google Apps Script project with permission to read calendars and call external APIs.
+
+## Setup in Google Apps Script
+
+1. Open `https://script.google.com`.
 2. Create a project and paste `slack_calendar_status_sync.gs`.
-3. Configure calendar IDs in `CONFIG` (or use `PropertiesService` overrides).
-4. Configure Slack token in `PropertiesService` (recommended).
+3. Configure values in `PropertiesService` (recommended).
 
 Recommended `PropertiesService` keys:
 
@@ -35,12 +34,7 @@ Recommended `PropertiesService` keys:
 - `ERROR_ALERT_WEBHOOK_URL` (optional)
 - `ERROR_ALERT_EMAIL` (optional)
 
-DND controls:
-
-- `DND_KEYWORDS` enable DND.
-- `NO_DND_KEYWORDS` disable DND and have higher priority than `DND_KEYWORDS`.
-
-Required Slack scopes include:
+Required Slack scopes:
 
 - `users.profile:write`
 - `users.profile:read`
@@ -49,43 +43,39 @@ Required Slack scopes include:
 - `dnd:write`
 - `dnd:read`
 
-## Validation
+## DND Controls
 
-`validateSlackConfig_` runs at startup and fails fast on missing/invalid config. Values are resolved from `PropertiesService` first, then `CONFIG`.
+- `DND_KEYWORDS` enable DND.
+- `NO_DND_KEYWORDS` disable DND and have higher priority than `DND_KEYWORDS`.
 
-## Runtime Modes
+## Run Modes
 
 - `syncSlackFromCalendars()` - normal run
 - `planSlackFromCalendars()` - decision plan only
 - `DRY_RUN: true` - no state-changing API calls
 
-## Logging and Metrics
+## Recommended Trigger
 
-Logs are structured JSON with `scope`, `runId`, `event`, and run metrics.
+- Create a time-driven trigger for `syncSlackFromCalendars()`:
+  - every 1 to 5 minutes (recommended)
 
-## Unit Tests
+## Manual Verification Checklist
 
-From repository root:
-
-```bash
-npm run test:slack
-```
-
-## Deployment with clasp
-
-1. Copy `.clasp.json.example` to `.clasp.json`.
-2. Fill `scriptId`.
-3. Run from repository root:
-
-```bash
-npm run deploy:slack
-```
+1. Run `planSlackFromCalendars()` and inspect the planned branch.
+2. Set `DRY_RUN: true` and run `syncSlackFromCalendars()`.
+3. Confirm logs match expected behavior.
+4. Set `DRY_RUN: false` only after checks pass.
 
 ## Troubleshooting
 
-- Missing calendar: verify ID and sharing permissions.
-- `invalid_auth`: rotate token and verify scopes.
-- No updates: check `DRY_RUN`, manual override, and execution logs.
+- `invalid_auth`:
+  rotate token and confirm Slack scopes.
+- No updates:
+  check `DRY_RUN`, manual override, and calendar access.
+- Wrong branch selected:
+  run `planSlackFromCalendars()` and verify current calendar events.
+- DND not behaving as expected:
+  review `DND_KEYWORDS` and `NO_DND_KEYWORDS` values.
 
 ## License
 
