@@ -1,74 +1,59 @@
 # Google Apps Scripts Collection
 
-A set of Google Apps Script automations for Google Calendar and Slack.
+Production-ready Google Apps Script automations for Google Calendar and Slack.
 
-## Projects
+Automate repetitive team workflows, keep calendars clean, and keep Slack status always up to date.
 
-- `google-calendar-absence-sync` - Syncs absence events from a team calendar to a personal calendar as Out of Office events.
-- `slack-calendar-status-sync` - Syncs Slack status, presence, and DND based on Google Calendar events.
+## Why Use This Repo?
+
+- Save time on manual status updates and calendar maintenance.
+- Improve team visibility for absences, meetings, and availability.
+- Reduce missed context in Slack with automatic presence and DND handling.
+- Start quickly with practical setup guides for real-world usage.
+
+## Keywords
+
+Google Apps Script, Google Calendar automation, Slack status automation, out of office sync, calendar-to-Slack sync, DND automation, productivity workflows.
+
+## Scripts
+
+1. `google-calendar-absence-sync`
+
+- Purpose: sync absence events from a source calendar to a target calendar as Out of Office.
+- Best for: HR/team availability visibility and automatic OOO calendar hygiene.
+- Full user guide:
+  [README.md](/home/kamil/praca/prywatne/google-apps-scripts/google-calendar-absence-sync/README.md)
+
+2. `slack-calendar-status-sync`
+
+- Purpose: update Slack status, presence, and DND from calendar events.
+- Best for: automatic Slack status management during meetings, focus time, holidays, and OOO.
+- Full user guide:
+  [README.md](/home/kamil/praca/prywatne/google-apps-scripts/slack-calendar-status-sync/README.md)
+- Quickstart:
+  [QUICKSTART.md](/home/kamil/praca/prywatne/google-apps-scripts/slack-calendar-status-sync/QUICKSTART.md)
+
+## General Setup (Applies to Both)
+
+1. Open `https://script.google.com`.
+2. Create a project and paste script code.
+3. Store real configuration values in `PropertiesService`.
+4. Run once manually to authorize access.
+5. Add a time-driven trigger.
+
+For exact required keys, function names, and run modes, use script-specific README files above.
 
 ## Security
 
-- The repository does not include production secrets.
-- Store sensitive config in `PropertiesService` and keep placeholders in `CONFIG`.
-- `google-calendar-absence-sync` reads: `SOURCE_CALENDAR_ID`, `TARGET_CALENDAR_ID`, `PERSON_NAME`.
-- `slack-calendar-status-sync` reads: `HOLIDAY_CAL_ID`, `STATUS_CAL_ID`, `MEETING_CAL_ID`, `SLACK_USER_TOKEN`.
-- Run a quick secret scan before publishing:
+- Do not store production secrets in source code.
+- Use `PropertiesService` for IDs/tokens.
+- Do not commit `.env`, `.clasp.json`, `.clasprc.json`, or credential files.
 
-```bash
-rg -n --hidden -S "(xox[pbar]-|AIza|AKIA|ghp_|github_pat_|token|secret|password|private key)"
-```
+## Use Cases
 
-## Publishing on GitHub
-
-1. Review each `CONFIG` object and keep safe placeholders if you use `PropertiesService`.
-2. Prefer storing real credentials/IDs in `PropertiesService` instead of source files.
-3. Ensure MIT license files are present in root and subprojects.
-4. Run `npm run release:check` before tagging a release.
-
-## Deployment (GAS + clasp)
-
-- Login once: `npm run clasp:login`
-- Configure each project from `.clasp.json.example` to `.clasp.json`
-- Push scripts:
-  - `npm run deploy:absence`
-  - `npm run deploy:slack`
-
-## Tests
-
-The repo uses npm workspaces:
-
-- `google-calendar-absence-sync`
-- `slack-calendar-status-sync`
-
-Run all tests:
-
-```bash
-npm test
-```
-
-Run per workspace:
-
-```bash
-npm run test:absence
-npm run test:slack
-```
-
-Quality and CI checks:
-
-```bash
-npm run lint
-npm run format:check
-npm run test:coverage
-npm run scan:secrets
-npm run release:check
-```
-
-## Ops Docs
-
-- Release checklist: `docs/RELEASE_CHECKLIST.md`
-- Operations runbook: `docs/OPERATIONS_RUNBOOK.md`
-- Changelog: `CHANGELOG.md`
+- Automatic Out of Office synchronization from team calendar to personal calendar.
+- Real-time Slack status and DND updates based on current calendar events.
+- Consistent availability signals across Google Calendar and Slack.
 
 ## License
 
